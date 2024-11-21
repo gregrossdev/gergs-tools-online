@@ -1,0 +1,507 @@
+openapi: 3.0.3
+info:
+  title: Gergs Tools Online
+  description: |
+    Gergs Tools Online provides REST APIs to CRUD tools, technicians, and users.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Gregory Ross
+    email: gregross.dev@gmail.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.0.1
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/gregross.dev/Tool-Tracker/0.0.1
+  - url: http://localhost:8080/api/v1
+    description: Development server
+tags:
+  - name: tool
+    description: Endpoints related to Gergs tools
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: technician
+    description: Endpoints related to Gergs technicians
+  - name: user
+    description: Endpoints related to Gergs users
+paths:
+  /tools:
+    get:
+      tags: 
+          - tool
+      summary: Find all tools
+      description: Find all tools and return them in an array.
+      operationId: findAllTools
+      responses:
+        200:
+          description: All tools found and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ApiResponseFindAllTools'
+      security: [] # no need to authenticate this endpoint
+    post:
+      tags:
+          - tool
+      summary: Add a tool
+      description: Add a new tool and return the saved one.
+      operationId: addTool
+      requestBody:
+        description: The new tool
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Tool'
+              example:
+                name: Hammer
+                description: A hammer is a basic hand tool used for driving nails into wood or other materials.
+                imageUrl: https://example.com/images/hammer.png
+        required: true
+      responses:
+        200:
+          description: Tool added and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAddTool'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseToolBadRequest'
+  /tools/{toolId}:
+    get:
+      tags:
+        - tool
+      summary: Find a tool by Id
+      description: Find a single tool and return it.
+      operationId: findToolById
+      parameters:
+        - name: toolId
+          in: path
+          description: Id of tool to return
+          required: true
+          schema:
+            type: string
+            example: 'tool-001'
+      responses:
+        200:
+          description: Tool found and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseFindOneTool'
+        404:
+          description: Tool not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseToolNotFound'
+      security: [] # no need to authenticate this endpoint
+    put:
+      tags:
+        - tool
+      summary: Update a tool
+      description: Update an existing tool and return the updated one.
+      operationId: updateTool
+      parameters:
+        - name: toolId
+          in: path
+          description: Id of tool to update
+          required: true
+          schema:
+            type: string
+            example: 'tool-001'
+      requestBody:
+        description: The tool with updated info
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Tool'
+              example:
+                name: Hammer-update
+                description: A hammer is a basic hand tool used for driving nails into wood or other materials.-update
+                imageUrl: https://example.com/images/hammer-update.png
+        required: true
+      responses:
+        200:
+          description: Tool updated and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUpdateTool'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseToolBadRequest'
+        404:
+          description: Tool not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseToolNotFound'
+    delete:
+      tags:
+        - tool
+      summary: Delete a tool
+      description: Delete a single tool.
+      operationId: deleteTool
+      parameters:
+        - name: toolId
+          in: path
+          description: Id of tool to delete
+          required: true
+          schema:
+            type: string
+            example: 'tool-001'
+      responses:
+        200:
+          description: Tool deleted
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDelete'
+        404:
+          description: Tool not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseToolNotFound'
+    
+components:
+  schemas:
+    Tool:
+      title: Tool
+      description: A tool
+      type: object
+      properties:
+        id:
+          title: Id
+          description: Id of the tool
+          type: string
+          example: 'tool-001'
+          readOnly: true
+        name:
+          title: Tool name
+          description: Name of the tool
+          type: string
+          example: Hammer
+        description:
+          title: Tool description
+          description: Description of the tool
+          type: string
+          example: A hammer is a tool used to drive nails into wood or other materials.
+        imageUrl:
+          title: Tool image url
+          description: URL of the image of the tool
+          type: string
+          example: https://example.com/images/hammer.png
+        possessor:
+          allOf:
+            - $ref: '#/components/schemas/Technician'
+          example: 
+            id: 1
+            name: Alex Carpenter
+            numberOfTools: 5
+          readOnly: true
+      required:
+        - id
+        - name
+        - description
+        - imageUrl
+
+    Technician:
+      title: Technician
+      description: A technician
+      type: object
+      properties:
+        id:
+          title: Id
+          description: Id of the technician
+          type: integer
+          minimum: 1
+          example: 2
+          readOnly: true
+        name:
+          title: Technician name
+          description: Name of the technician
+          type: string
+          example: Alex Carpenter
+        numberOfTools:
+          title: Number of tools
+          description: Number of tools owned by the technician
+          type: integer
+          example: 5
+          readOnly: true
+      required:
+        - id
+        - name
+      
+    ToolList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Tool'
+      example:
+        - id: 'tool-001'
+          name: Hammer
+          description: A tool used to drive nails into wood or other materials.
+          imageUrl: https://example.com/images/hammer.png
+          owner:
+            id: 1
+            name: Alex Carpenter
+            numberOfTools: 5
+        - id: 'tool-002'
+          name: Screwdriver
+          description: A tool used for turning screws to fasten or remove them.
+          imageUrl: https://example.com/images/screwdriver.png
+          owner:
+            id: 2
+            name: Jamie Fixer
+            numberOfTools: 3
+        - id: 'tool-003'
+          name: Power Drill
+          description: A cordless drill used for versatile construction projects.
+          imageUrl: https://example.com/images/drill.png
+          owner:
+            id: 1
+            name: Alex Carpenter
+            numberOfTools: 5
+        - id: 'tool-004'
+          name: Wrench
+          description: A tool used to provide grip and mechanical advantage in applying torque to turn objects.
+          imageUrl: https://example.com/images/wrench.png
+          owner:
+            id: 2
+            name: Jamie Fixer
+            numberOfTools: 3
+        - id: 'tool-005'
+          name: Pliers
+          description: A hand tool used to hold objects firmly or bend materials.
+          imageUrl: https://example.com/images/pliers.png
+          owner:
+            id: 3
+            name: Morgan Builder
+            numberOfTools: 2
+        - id: 'tool-006'
+          name: Measuring Tape
+          description: A flexible tool used for measuring lengths or distances.
+          imageUrl: https://example.com/images/measuring-tape.png
+          owner: null
+         
+    ToolBadRequest:
+      title: Tool bad request
+      description: Messages describing a bad request error
+      type: object
+      properties:
+        name:
+          title: Name of the tool
+          description: The error message
+          type: string
+          example: name is required.
+        description:
+          title: Description of the tool
+          description: The error message
+          type: string
+          example: description is required.
+        imageUrl:
+          title: Image url of the tool
+          description: The error message
+          type: string
+          example: imageUrl is required.
+
+    ApiResponseFindAllTools:
+      title: API response to find all tools
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Find All Success
+        data:
+          $ref: '#/components/schemas/ToolList'
+
+          
+    ApiResponseAddTool:
+        title: API response for add tool
+        type: object
+        properties:
+          flag:
+            type: boolean
+            description: Success or not
+          code:
+            type: integer
+            description: Return code
+            example: 200
+          message:
+            type: string
+            example: Add Success
+          data:
+            allOf: # inheritance and composition
+              - $ref: '#/components/schemas/Tool'
+            example:
+              id: 'tool-001'
+              name: Hammer
+              description: A hammer is a basic hand tool used for driving nails into wood or other materials.
+              imageUrl: https://example.com/images/hammer.png
+              owner: null
+
+    ApiResponseFindOneTool:
+        title: API response for find one tool
+        type: object
+        properties:
+          flag:
+            type: boolean
+            description: Success or not
+          code:
+            type: integer
+            example: 200
+          message:
+            type: string
+            example: Find One Success
+          data:
+            allOf: # inheritance and composition
+              - $ref: '#/components/schemas/Tool'
+            example:
+              id: 'tool-002'
+              name: Screwdriver
+              description: A tool used for turning screws to fasten or remove them.
+              imageUrl: https://example.com/images/screwdriver.png
+              owner:
+                id: 2
+                name: Jamie Fixer
+                numberOfTools: 3
+    ApiResponseUpdateTool:
+      title: API response for update tool
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: Update Success
+        data:
+          allOf: # inheritance and composition
+            - $ref: '#/components/schemas/Tool'
+          example:
+            id: 'tool-001'
+            name: Hammer-update
+            description: A hammer is a basic hand tool used for driving nails into wood or other materials.-update
+            imageUrl: https://example.com/images/hammer-update.png
+            owner:
+              id: 1
+              name: Alex Carpenter
+              numberOfTools: 5
+  
+    ApiResponseToolNotFound:
+      title: API response for not found error
+      description: The schema for not found error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 404
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: Could not find tool with Id tool-999 :(
+          readOnly: true
+        data:
+          type: object
+          example: null
+
+    ApiResponseDelete:
+      title: API response for delete
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: Delete Success
+        data:
+          type: object
+          example: null
+
+    ApiResponseToolBadRequest:
+      title: API response for bad request error
+      description: The schema for bad request error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 400
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: Provided arguments are invalid, see data for details.
+          readOnly: true
+        data:
+          $ref: '#/components/schemas/ToolBadRequest'
