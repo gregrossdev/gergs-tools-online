@@ -14,6 +14,7 @@ public class ToolService {
 	}
 
 	public Tool findById(String toolId) {
-			return this.toolRepository.findById(toolId).orElse(null);
+		return toolRepository.findById(toolId)
+			.orElseThrow(() -> new ToolNotFoundException(toolId));
 	}
 }

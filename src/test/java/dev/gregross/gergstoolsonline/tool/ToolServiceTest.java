@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -66,5 +67,23 @@ class ToolServiceTest {
 		assertThat(returnedTool.getImageUrl()).isEqualTo(tool.getImageUrl());
 		verify(toolRepository, times(1)).findById("1250808601744904191");
 
+	}
+
+	@Test
+	void testFindByIdNotFound() {
+		// given
+		given(toolRepository.findById(Mockito.any(String.class))).willReturn(Optional.empty());
+
+		// when
+		Throwable thrown = catchThrowable(() -> {
+			Tool returnedTool = toolService.findById("1250808601744904191");
+		});
+
+		// then
+		assertThat(thrown)
+			.isInstanceOf(ToolNotFoundException.class)
+			.hasMessage("Could not find tool with id: 1250808601744904191");
+
+		verify(toolRepository, times(1)).findById("1250808601744904191");
 	}
 }
