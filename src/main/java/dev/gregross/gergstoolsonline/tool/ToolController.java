@@ -2,6 +2,7 @@ package dev.gregross.gergstoolsonline.tool;
 
 import dev.gregross.gergstoolsonline.system.Result;
 import dev.gregross.gergstoolsonline.system.StatusCode;
+import dev.gregross.gergstoolsonline.tool.converter.ToolDtoToToolConverter;
 import dev.gregross.gergstoolsonline.tool.converter.ToolToToolDtoConverter;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +15,12 @@ public class ToolController {
 
 	private final ToolService toolService;
 	private final ToolToToolDtoConverter toolToToolDtoConverter;
+	private final ToolDtoToToolConverter toolDtoToToolConverter;
 
-	public ToolController(ToolService toolService, ToolToToolDtoConverter toolToToolDtoConverter) {
+	public ToolController(ToolService toolService, ToolToToolDtoConverter toolToToolDtoConverter, ToolDtoToToolConverter toolDtoToToolConverter) {
 		this.toolService = toolService;
 		this.toolToToolDtoConverter = toolToToolDtoConverter;
+		this.toolDtoToToolConverter = toolDtoToToolConverter;
 	}
 
 	@GetMapping("/{toolId}")
@@ -38,7 +41,10 @@ public class ToolController {
 
 	@PostMapping
 	public Result addTool(@RequestBody ToolDto toolDto) {
-		return null;
+		Tool newTool = toolDtoToToolConverter.convert(toolDto);
+		Tool savedTool = toolService.save(newTool);
+		ToolDto savedToolDto = toolToToolDtoConverter.convert(savedTool);
+		return new Result(true, StatusCode.SUCCESS, "Add Success", savedToolDto);
 	}
 
 

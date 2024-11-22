@@ -1,10 +1,12 @@
 package dev.gregross.gergstoolsonline.tool;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.gregross.gergstoolsonline.system.StatusCode;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +31,9 @@ class ToolControllerTest {
 
 	@MockBean
 	ToolService toolService;
+
+	@Autowired
+	ObjectMapper objectMapper;
 
 	List<Tool> tools = new ArrayList<>();
 
@@ -123,5 +128,35 @@ class ToolControllerTest {
 			.andExpect(jsonPath("$.data[0].name").value("Deluminator"))
 			.andExpect(jsonPath("$.data[1].id").value("1250808601744904192"))
 			.andExpect(jsonPath("$.data[1].name").value("Invisibility Cloak"));
+	}
+
+	@Test
+	void testAddToolSuccess() throws Exception {
+		// Given
+		ToolDto toolDto = new ToolDto(null,
+			"Remembrall",
+			"A Remembrall was a magical large marble-sized glass ball that contained smoke which turned red when its owner or user had forgotten something. It turned clear once whatever was forgotten was remembered.",
+			"ImageUrl",
+			null);
+		String json = objectMapper.writeValueAsString(toolDto);
+
+		Tool savedTool = new Tool();
+		savedTool.setId("1250808601744904197");
+		savedTool.setName("Remembrall");
+		savedTool.setDescription("A Remembrall was a magical large marble-sized glass ball that contained smoke which turned red when its owner or user had forgotten something. It turned clear once whatever was forgotten was remembered.");
+		savedTool.setImageUrl("ImageUrl");
+
+		given(toolService.save(Mockito.any(Tool.class))).willReturn(savedTool);
+
+
+		// When and then
+		mockMvc.perform(post("/api/v1/tools").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.flag").value(true))
+			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
+			.andExpect(jsonPath("$.message").value("Add Success"))
+			.andExpect(jsonPath("$.data.id").isNotEmpty())
+			.andExpect(jsonPath("$.data.name").value(savedTool.getName()))
+			.andExpect(jsonPath("$.data.description").value(savedTool.getDescription()))
+			.andExpect(jsonPath("$.data.imageUrl").value(savedTool.getImageUrl()));
 	}
 }
