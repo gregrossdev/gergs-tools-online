@@ -1,6 +1,7 @@
 package dev.gregross.gergstoolsonline.tool;
 
 import dev.gregross.gergstoolsonline.system.StatusCode;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -107,5 +108,20 @@ class ToolControllerTest {
 			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
 			.andExpect(jsonPath("$.message").value("Could not find tool with id: 1250808601744904191"))
 			.andExpect(jsonPath("$.data").isEmpty());
+	}
+
+	@Test
+	void testFindAllToolsSuccess() throws Exception {
+		given(toolService.findAll()).willReturn(tools);
+
+		mockMvc.perform(get("/api/v1/tools").accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.flag").value(true))
+			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
+			.andExpect(jsonPath("$.message").value("Find All Success"))
+			.andExpect(jsonPath("$.data", Matchers.hasSize(this.tools.size())))
+			.andExpect(jsonPath("$.data[0].id").value("1250808601744904191"))
+			.andExpect(jsonPath("$.data[0].name").value("Deluminator"))
+			.andExpect(jsonPath("$.data[1].id").value("1250808601744904192"))
+			.andExpect(jsonPath("$.data[1].name").value("Invisibility Cloak"));
 	}
 }
