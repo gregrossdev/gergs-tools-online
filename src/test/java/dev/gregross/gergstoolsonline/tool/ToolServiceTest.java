@@ -33,7 +33,21 @@ class ToolServiceTest {
 
 	@BeforeEach
 	void setUp() {
+		Tool a1 = new Tool();
+		a1.setId("1250808601744904191");
+		a1.setName("Deluminator");
+		a1.setDescription("A Deluminator is a device invented by Albus Dumbledore that resembles a cigarette lighter. It is used to remove or absorb (as well as return) the light from any light source to provide cover to the user.");
+		a1.setImageUrl("imageUrl");
 
+		Tool a2 = new Tool();
+		a2.setId("1250808601744904192");
+		a2.setName("Invisibility Cloak");
+		a2.setDescription("An invisibility cloak is used to make the wearer invisible.");
+		a2.setImageUrl("imageUrl");
+
+		this.tools = new ArrayList<>();
+		this.tools.add(a1);
+		this.tools.add(a2);
 	}
 
 	@AfterEach
@@ -86,4 +100,25 @@ class ToolServiceTest {
 
 		verify(toolRepository, times(1)).findById("1250808601744904191");
 	}
+
+	@Test
+	void testFindAllSuccess() {
+		// given
+		given(toolRepository.findAll()).willReturn(tools);
+
+		// when
+		List<Tool> returnedTools = toolService.findAll();
+
+		// then
+		assertThat(returnedTools.size()).isEqualTo(tools.size());
+	}
+
+
+
+
+
+
+
+
+
 }
