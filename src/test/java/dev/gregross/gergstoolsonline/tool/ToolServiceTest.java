@@ -1,6 +1,7 @@
 package dev.gregross.gergstoolsonline.tool;
 
 import dev.gregross.gergstoolsonline.technician.Technician;
+import dev.gregross.gergstoolsonline.tool.utils.IdWorker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,9 @@ class ToolServiceTest {
 
 	@Mock
 	ToolRepository toolRepository;
+
+	@Mock
+	IdWorker idWorker;
 
 	@InjectMocks
 	ToolService toolService;
@@ -113,6 +117,28 @@ class ToolServiceTest {
 		assertThat(returnedTools.size()).isEqualTo(tools.size());
 	}
 
+
+	@Test
+	void testSaveSuccess() {
+		Tool newTool = new Tool();
+		newTool.setName("12v Milwaukee");
+		newTool.setDescription("A 12v Milwaukee drill");
+		newTool.setImageUrl("imageUrl");
+
+		// given
+		given(idWorker.nextId()).willReturn(123456L);
+		given(toolRepository.save(newTool)).willReturn(newTool);
+
+		// when
+		Tool savedTool = toolService.save(newTool);
+
+		// then
+		assertThat(savedTool.getId()).isEqualTo("123456");
+		assertThat(savedTool.getName()).isEqualTo(newTool.getName());
+		assertThat(savedTool.getDescription()).isEqualTo(newTool.getDescription());
+		assertThat(savedTool.getImageUrl()).isEqualTo(newTool.getImageUrl());
+		verify(toolRepository, times(1)).save(newTool);
+	}
 
 
 
