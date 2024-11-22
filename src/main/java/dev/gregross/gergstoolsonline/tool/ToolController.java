@@ -4,6 +4,7 @@ import dev.gregross.gergstoolsonline.system.Result;
 import dev.gregross.gergstoolsonline.system.StatusCode;
 import dev.gregross.gergstoolsonline.tool.converter.ToolDtoToToolConverter;
 import dev.gregross.gergstoolsonline.tool.converter.ToolToToolDtoConverter;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class ToolController {
 	}
 
 	@PostMapping
-	public Result addTool(@RequestBody ToolDto toolDto) {
+	public Result addTool(@Valid @RequestBody ToolDto toolDto) {
 		Tool newTool = toolDtoToToolConverter.convert(toolDto);
 		Tool savedTool = toolService.save(newTool);
 		ToolDto savedToolDto = toolToToolDtoConverter.convert(savedTool);
