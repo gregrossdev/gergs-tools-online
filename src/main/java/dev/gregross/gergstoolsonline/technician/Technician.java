@@ -51,4 +51,9 @@ public class Technician implements Serializable {
   public Integer getNumberOfTools() {
     return tools.size();
   }
+
+  public void addTool(Tool tool) {
+    tool.setPossessor(this);
+    tools.add(tool);
+  }
 }
