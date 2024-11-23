@@ -2,6 +2,7 @@ package dev.gregross.gergstoolsonline.system.exception;
 
 import dev.gregross.gergstoolsonline.system.Result;
 import dev.gregross.gergstoolsonline.system.StatusCode;
+import dev.gregross.gergstoolsonline.technician.TechnicianNotFoundException;
 import dev.gregross.gergstoolsonline.tool.ToolNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -20,7 +21,13 @@ public class ExceptionHandlerAdvice {
 
 	@ExceptionHandler(ToolNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	Result handleArtifactNotFoundException(ToolNotFoundException ex){
+	Result handleToolNotFoundException(ToolNotFoundException ex){
+		return new Result(false, StatusCode.NOT_FOUND, ex.getMessage());
+	}
+
+	@ExceptionHandler(TechnicianNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	Result handleTechnicianNotFoundException(TechnicianNotFoundException ex){
 		return new Result(false, StatusCode.NOT_FOUND, ex.getMessage());
 	}
 
