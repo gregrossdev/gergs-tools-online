@@ -48,5 +48,19 @@ public class ToolController {
 		return new Result(true, StatusCode.SUCCESS, "Add Success", savedToolDto);
 	}
 
+	@PutMapping("/{toolId}")
+	public Result updateTool(@PathVariable String toolId, @Valid @RequestBody ToolDto toolDto){
+		Tool currentTool = this.toolDtoToToolConverter.convert(toolDto);
+		Tool updatedTool = this.toolService.update(toolId, currentTool);
+		ToolDto updatedToolDto = this.toolToToolDtoConverter.convert(updatedTool);
+		return new Result(true, StatusCode.SUCCESS, "Update Success", updatedToolDto);
+	}
+
+	@DeleteMapping("/{toolId}")
+	public Result deleteTool(@PathVariable String toolId) {
+		toolService.delete(toolId);
+		return new Result(true, StatusCode.SUCCESS, "Delete Success");
+	}
+
 
 }

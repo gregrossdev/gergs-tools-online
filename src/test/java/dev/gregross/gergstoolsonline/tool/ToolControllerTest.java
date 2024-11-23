@@ -8,16 +8,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,6 +39,9 @@ class ToolControllerTest {
 
 	@Autowired
 	ObjectMapper objectMapper;
+
+	@Value("${api.endpoint.base-url}") // Spring will go to application-dev.yml to find the value and inject into this field.
+	String baseUrl;
 
 	List<Tool> tools = new ArrayList<>();
 
@@ -91,10 +99,10 @@ class ToolControllerTest {
 	@Test
 	void testFindToolByIdSuccess() throws Exception {
 		// Given
-		given(this.toolService.findById("1250808601744904191")).willReturn(this.tools.get(0));
+		given(toolService.findById("1250808601744904191")).willReturn(this.tools.get(0));
 
 		// When and then
-		this.mockMvc.perform(get("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
 			.andExpect(jsonPath("$.message").value("Find One Success"))
@@ -105,10 +113,10 @@ class ToolControllerTest {
 	@Test
 	void testFindToolByIdNotFound() throws Exception {
 		// Given
-		given(this.toolService.findById("1250808601744904191")).willThrow(new ToolNotFoundException("1250808601744904191"));
+		given(toolService.findById("1250808601744904191")).willThrow(new ToolNotFoundException("1250808601744904191"));
 
 		// When and then
-		this.mockMvc.perform(get("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(false))
 			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
 			.andExpect(jsonPath("$.message").value("Could not find tool with id: 1250808601744904191"))
@@ -159,4 +167,85 @@ class ToolControllerTest {
 			.andExpect(jsonPath("$.data.description").value(savedTool.getDescription()))
 			.andExpect(jsonPath("$.data.imageUrl").value(savedTool.getImageUrl()));
 	}
+
+	@Test
+	void testUpdateToolSuccess() throws Exception {
+		// Given
+		ToolDto toolDto = new ToolDto("1250808601744904192",
+			"Invisibility Cloak",
+			"A new description.",
+			"ImageUrl",
+			null);
+		String json = objectMapper.writeValueAsString(toolDto);
+
+		Tool updatedTool = new Tool();
+		updatedTool.setId("1250808601744904192");
+		updatedTool.setName("Invisibility Cloak");
+		updatedTool.setDescription("A new description.");
+		updatedTool.setImageUrl("ImageUrl");
+
+		given(toolService.update(eq("1250808601744904192"), Mockito.any(Tool.class))).willReturn(updatedTool);
+
+		// When and then
+		mockMvc.perform(put("/api/v1/tools/1250808601744904192").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.flag").value(true))
+			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
+			.andExpect(jsonPath("$.message").value("Update Success"))
+			.andExpect(jsonPath("$.data.id").value("1250808601744904192"))
+			.andExpect(jsonPath("$.data.name").value(updatedTool.getName()))
+			.andExpect(jsonPath("$.data.description").value(updatedTool.getDescription()))
+			.andExpect(jsonPath("$.data.imageUrl").value(updatedTool.getImageUrl()));
+	}
+
+	@Test
+	void testUpdateToolErrorWithNonExistentId() throws Exception {
+		// Given
+		ToolDto toolDto = new ToolDto("1250808601744904192",
+			"Invisibility Cloak",
+			"A new description.",
+			"ImageUrl",
+			null);
+		String json = objectMapper.writeValueAsString(toolDto);
+
+		given(toolService.update(eq("1250808601744904192"), Mockito.any(Tool.class))).willThrow(new ToolNotFoundException("1250808601744904192"));
+
+		// When and then
+		mockMvc.perform(put("/api/v1/tools/1250808601744904192").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.flag").value(false))
+			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
+			.andExpect(jsonPath("$.message").value("Could not find tool with id: 1250808601744904192"))
+			.andExpect(jsonPath("$.data").isEmpty());
+	}
+
+	@Test
+	void testDeleteToolSuccess() throws Exception {
+		// Given
+		doNothing().when(toolService).delete("1250808601744904191");
+
+		// When and then
+		mockMvc.perform(delete("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.flag").value(true))
+			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
+			.andExpect(jsonPath("$.message").value("Delete Success"))
+			.andExpect(jsonPath("$.data").isEmpty());
+	}
+
+	@Test
+	void testDeleteToolErrorWithNonExistentId() throws Exception {
+		// Given
+		doThrow(new ToolNotFoundException("1250808601744904191")).when(toolService).delete("1250808601744904191");
+
+		// When and then
+		mockMvc.perform(delete("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.flag").value(false))
+			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
+			.andExpect(jsonPath("$.message").value("Could not find tool with id: 1250808601744904191"))
+			.andExpect(jsonPath("$.data").isEmpty());
+	}
+
+
+
+
+
+
 }
