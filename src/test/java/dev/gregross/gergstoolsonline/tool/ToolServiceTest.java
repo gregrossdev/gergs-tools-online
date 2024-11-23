@@ -17,9 +17,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ToolServiceTest {
@@ -140,11 +140,85 @@ class ToolServiceTest {
 		verify(toolRepository, times(1)).save(newTool);
 	}
 
+	@Test
+	void testUpdateSuccess() {
+		// given
+		Tool oldTool = new Tool();
+		oldTool.setId("1250808601744904192");
+		oldTool.setName("Invisibility Cloak");
+		oldTool.setDescription("An invisibility cloak is used to make the wearer invisible.");
+		oldTool.setImageUrl("ImageUrl");
 
+		Tool update = new Tool();
+		update.setId("1250808601744904192");
+		update.setName("Invisibility Cloak");
+		update.setDescription("A new description.");
+		update.setImageUrl("ImageUrl");
 
+		given(toolRepository.findById("1250808601744904192")).willReturn(Optional.of(oldTool));
+		given(toolRepository.save(oldTool)).willReturn(oldTool);
 
+		// when
+		Tool updatedTool = toolService.update("1250808601744904192", update);
 
+		// then
+		assertThat(updatedTool.getId()).isEqualTo(update.getId());
+		assertThat(updatedTool.getDescription()).isEqualTo(update.getDescription());
+		verify(toolRepository, times(1)).findById("1250808601744904192");
+		verify(toolRepository, times(1)).save(oldTool);
 
+	}
 
+	@Test
+	void testUpdateNotFound() {
+		// given
+		Tool update = new Tool();
+		update.setName("Invisibility Cloak");
+		update.setDescription("A new description.");
+		update.setImageUrl("ImageUrl");
+
+		given(toolRepository.findById("1250808601744904192")).willReturn(Optional.empty());
+
+		// when
+		assertThrows(ToolNotFoundException.class, () -> {
+			toolService.update("1250808601744904192", update);
+		});
+
+		// then
+		verify(toolRepository, times(1)).findById("1250808601744904192");
+	}
+
+	@Test
+	void testDeleteSuccess(){
+		// Given
+		Tool tool = new Tool();
+		tool.setId("1250808601744904192");
+		tool.setName("Invisibility Cloak");
+		tool.setDescription("An invisibility cloak is used to make the wearer invisible.");
+		tool.setImageUrl("ImageUrl");
+
+		given(toolRepository.findById("1250808601744904192")).willReturn(Optional.of(tool));
+		doNothing().when(toolRepository).deleteById("1250808601744904192");
+
+		// When
+		toolService.delete("1250808601744904192");
+
+		// Then
+		verify(toolRepository, times(1)).deleteById("1250808601744904192");
+	}
+
+	@Test
+	void testDeleteNotFound(){
+		// Given
+		given(toolRepository.findById("1250808601744904192")).willReturn(Optional.empty());
+
+		// When
+		assertThrows(ToolNotFoundException.class, () -> {
+			toolService.delete("1250808601744904192");
+		});
+
+		// Then
+		verify(toolRepository, times(1)).findById("1250808601744904192");
+	}
 
 }
