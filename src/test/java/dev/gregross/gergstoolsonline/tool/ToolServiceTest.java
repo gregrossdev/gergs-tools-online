@@ -1,5 +1,6 @@
 package dev.gregross.gergstoolsonline.tool;
 
+import dev.gregross.gergstoolsonline.system.exception.ObjectNotFoundException;
 import dev.gregross.gergstoolsonline.technician.Technician;
 import dev.gregross.gergstoolsonline.tool.utils.IdWorker;
 import org.junit.jupiter.api.AfterEach;
@@ -99,7 +100,7 @@ class ToolServiceTest {
 
 		// then
 		assertThat(thrown)
-			.isInstanceOf(ToolNotFoundException.class)
+			.isInstanceOf(ObjectNotFoundException.class)
 			.hasMessage("Could not find tool with id: 1250808601744904191");
 
 		verify(toolRepository, times(1)).findById("1250808601744904191");
@@ -180,7 +181,7 @@ class ToolServiceTest {
 		given(toolRepository.findById("1250808601744904192")).willReturn(Optional.empty());
 
 		// when
-		assertThrows(ToolNotFoundException.class, () -> {
+		assertThrows(ObjectNotFoundException.class, () -> {
 			toolService.update("1250808601744904192", update);
 		});
 
@@ -213,7 +214,7 @@ class ToolServiceTest {
 		given(toolRepository.findById("1250808601744904192")).willReturn(Optional.empty());
 
 		// When
-		assertThrows(ToolNotFoundException.class, () -> {
+		assertThrows(ObjectNotFoundException.class, () -> {
 			toolService.delete("1250808601744904192");
 		});
 

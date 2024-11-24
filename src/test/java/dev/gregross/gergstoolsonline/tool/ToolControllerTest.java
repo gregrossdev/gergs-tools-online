@@ -2,6 +2,7 @@ package dev.gregross.gergstoolsonline.tool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.gregross.gergstoolsonline.system.StatusCode;
+import dev.gregross.gergstoolsonline.system.exception.ObjectNotFoundException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,7 +114,7 @@ class ToolControllerTest {
 	@Test
 	void testFindToolByIdNotFound() throws Exception {
 		// Given
-		given(toolService.findById("1250808601744904191")).willThrow(new ToolNotFoundException("1250808601744904191"));
+		given(toolService.findById("1250808601744904191")).willThrow(new ObjectNotFoundException("tool", "1250808601744904191"));
 
 		// When and then
 		mockMvc.perform(get("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
@@ -207,7 +208,7 @@ class ToolControllerTest {
 			null);
 		String json = objectMapper.writeValueAsString(toolDto);
 
-		given(toolService.update(eq("1250808601744904192"), Mockito.any(Tool.class))).willThrow(new ToolNotFoundException("1250808601744904192"));
+		given(toolService.update(eq("1250808601744904192"), Mockito.any(Tool.class))).willThrow(new ObjectNotFoundException("tool", "1250808601744904192"));
 
 		// When and then
 		mockMvc.perform(put("/api/v1/tools/1250808601744904192").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
@@ -233,7 +234,7 @@ class ToolControllerTest {
 	@Test
 	void testDeleteToolErrorWithNonExistentId() throws Exception {
 		// Given
-		doThrow(new ToolNotFoundException("1250808601744904191")).when(toolService).delete("1250808601744904191");
+		doThrow(new ObjectNotFoundException("tool", "1250808601744904191")).when(toolService).delete("1250808601744904191");
 
 		// When and then
 		mockMvc.perform(delete("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
