@@ -2,7 +2,6 @@ package dev.gregross.gergstoolsonline.system.exception;
 
 import dev.gregross.gergstoolsonline.system.Result;
 import dev.gregross.gergstoolsonline.system.StatusCode;
-import dev.gregross.gergstoolsonline.tool.ToolNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -18,9 +17,9 @@ import java.util.Map;
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
 
-	@ExceptionHandler(ToolNotFoundException.class)
+	@ExceptionHandler(ObjectNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	Result handleArtifactNotFoundException(ToolNotFoundException ex){
+	Result handleObjectNotFoundException(ObjectNotFoundException ex){
 		return new Result(false, StatusCode.NOT_FOUND, ex.getMessage());
 	}
 

@@ -1,6 +1,7 @@
 package dev.gregross.gergstoolsonline.tool;
 
 import dev.gregross.gergstoolsonline.system.Result;
+import dev.gregross.gergstoolsonline.system.exception.ObjectNotFoundException;
 import dev.gregross.gergstoolsonline.tool.utils.IdWorker;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class ToolService {
 
 	public Tool findById(String toolId) {
 		return toolRepository.findById(toolId)
-			.orElseThrow(() -> new ToolNotFoundException(toolId));
+			.orElseThrow(() -> new ObjectNotFoundException("tool", toolId));
 	}
 
 	public List<Tool> findAll() {
@@ -41,13 +42,13 @@ public class ToolService {
 				currentTool.setImageUrl(updatedTool.getImageUrl());
 				return toolRepository.save(currentTool);
 			})
-			.orElseThrow(() -> new ToolNotFoundException(toolId));
+			.orElseThrow(() -> new ObjectNotFoundException("tool", toolId));
 	}
 
 
 	public void delete(String toolId) {
 		toolRepository.findById(toolId)
-			.orElseThrow(() -> new ToolNotFoundException(toolId));
+			.orElseThrow(() -> new ObjectNotFoundException("tool", toolId));
 		toolRepository.deleteById(toolId);
 	}
 }

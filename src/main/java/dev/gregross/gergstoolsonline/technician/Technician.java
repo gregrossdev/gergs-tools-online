@@ -56,4 +56,15 @@ public class Technician implements Serializable {
     tool.setPossessor(this);
     tools.add(tool);
   }
+
+  public void removeAllTools() {
+    tools.forEach(tool -> tool.setPossessor(null));
+    tools = new ArrayList<>();
+  }
+
+  public void removeTool(Tool toolToBeAssigned) {
+    // Remove tool owner.
+    toolToBeAssigned.setPossessor(null);
+    tools.remove(toolToBeAssigned);
+  }
 }
