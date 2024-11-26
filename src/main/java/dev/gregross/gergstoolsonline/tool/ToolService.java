@@ -1,7 +1,6 @@
 package dev.gregross.gergstoolsonline.tool;
 
-import dev.gregross.gergstoolsonline.system.Result;
-import dev.gregross.gergstoolsonline.system.exception.ObjectNotFoundException;
+import dev.gregross.gergstoolsonline.system.http.exception.ObjectNotFoundException;
 import dev.gregross.gergstoolsonline.tool.utils.IdWorker;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;

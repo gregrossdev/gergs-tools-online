@@ -1,4 +1,4 @@
-package dev.gregross.gergstoolsonline.system.exception;
+package dev.gregross.gergstoolsonline.system.http.exception;
 
 public class ObjectNotFoundException extends RuntimeException{
 	public ObjectNotFoundException(String objectName, String id) {

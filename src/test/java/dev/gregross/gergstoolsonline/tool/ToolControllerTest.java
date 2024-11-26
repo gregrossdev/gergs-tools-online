@@ -1,8 +1,8 @@
 package dev.gregross.gergstoolsonline.tool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.gregross.gergstoolsonline.system.StatusCode;
-import dev.gregross.gergstoolsonline.system.exception.ObjectNotFoundException;
+import dev.gregross.gergstoolsonline.system.http.StatusCode;
+import dev.gregross.gergstoolsonline.system.http.exception.ObjectNotFoundException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 

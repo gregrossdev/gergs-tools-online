@@ -1,4 +1,4 @@
-package dev.gregross.gergstoolsonline.user;
+package dev.gregross.gergstoolsonline.appuser;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -6,11 +6,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.io.Serializable;
+
 @Entity
-public class User {
+public class AppUser implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
 	@NotEmpty(message = "username is required.")
@@ -24,7 +25,8 @@ public class User {
 	@NotEmpty(message = "roles are required.")
 	private String roles; // Space separated string
 
-	public User() {
+
+	public AppUser() {
 	}
 
 	public Integer getId() {

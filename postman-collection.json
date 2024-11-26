@@ -16,9 +16,16 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/v1/tools/1250808601744904191",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "tools", "1250808601744904191"]
+              "path": [
+                "api",
+                "v1",
+                "tools",
+                "1250808601744904191"
+              ]
             }
           },
           "response": []
@@ -30,7 +37,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Hammer\",\n  \"description\": \"A new description.\",\n  \"imageUrl\": \"imageUrl\"\n}",
+              "raw": "{\n  \"name\": \"Invisibility Cloak\",\n  \"description\": \"A new description.\",\n  \"imageUrl\": \"imageUrl\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -39,9 +46,16 @@
             },
             "url": {
               "raw": "localhost:8080/api/v1/tools/1250808601744904192",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "tools", "1250808601744904192"]
+              "path": [
+                "api",
+                "v1",
+                "tools",
+                "1250808601744904192"
+              ]
             }
           },
           "response": []
@@ -53,9 +67,15 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/v1/tools",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "tools"]
+              "path": [
+                "api",
+                "v1",
+                "tools"
+              ]
             }
           },
           "response": []
@@ -76,9 +96,15 @@
             },
             "url": {
               "raw": "localhost:8080/api/v1/tools",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "tools"]
+              "path": [
+                "api",
+                "v1",
+                "tools"
+              ]
             }
           },
           "response": []
@@ -90,9 +116,16 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/v1/tools/1250808601744904191",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "tools", "1250808601744904191"]
+              "path": [
+                "api",
+                "v1",
+                "tools",
+                "1250808601744904191"
+              ]
             }
           },
           "response": []
@@ -109,9 +142,15 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/v1/technicians",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "technicians"]
+              "path": [
+                "api",
+                "v1",
+                "technicians"
+              ]
             }
           },
           "response": []
@@ -123,9 +162,16 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/v1/technicians/1",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "technicians", "1"]
+              "path": [
+                "api",
+                "v1",
+                "technicians",
+                "1"
+              ]
             }
           },
           "response": []
@@ -146,9 +192,15 @@
             },
             "url": {
               "raw": "localhost:8080/api/v1/technicians",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "technicians"]
+              "path": [
+                "api",
+                "v1",
+                "technicians"
+              ]
             }
           },
           "response": []
@@ -169,9 +221,16 @@
             },
             "url": {
               "raw": "localhost:8080/api/v1/technicians/2",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "technicians", "2"]
+              "path": [
+                "api",
+                "v1",
+                "technicians",
+                "2"
+              ]
             }
           },
           "response": []
@@ -183,9 +242,16 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/v1/technicians/2",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "technicians", "2"]
+              "path": [
+                "api",
+                "v1",
+                "technicians",
+                "2"
+              ]
             }
           },
           "response": []
@@ -197,9 +263,18 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/v1/technicians/3/tools/1250808601744904192",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "technicians", "3", "tools", "1250808601744904192"]
+              "path": [
+                "api",
+                "v1",
+                "technicians",
+                "3",
+                "tools",
+                "1250808601744904192"
+              ]
             }
           },
           "response": []
@@ -216,14 +291,184 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/v1/users",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "8080",
-              "path": ["api", "v1", "users"]
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find a user by Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8080/api/v1/users/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add a user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"lily\",\n  \"password\": \"ABCDEfghi123456*()\",\n  \"enabled\": true,\n  \"roles\": \"user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:8080/api/v1/users",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update a user",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john-update\",\n  \"enabled\": true,\n  \"roles\": \"admin user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:8080/api/v1/users/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete a user",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "localhost:8080/api/v1/users/3",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "123456",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "john",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "localhost:8080/api/v1/users/login",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "login"
+              ]
             }
           },
           "response": []
         }
       ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "localhost:8080/api/v1",
+      "type": "string"
     }
   ]
 }

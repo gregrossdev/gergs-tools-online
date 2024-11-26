@@ -1,9 +1,9 @@
-package dev.gregross.gergstoolsonline.user;
+package dev.gregross.gergstoolsonline.appuser;
 
 import jakarta.validation.constraints.NotEmpty;
 
 
-public record UserDto(
+public record AppUserDto(
 	Integer id,
 	@NotEmpty(message = "username is required.")
 	String username,

@@ -1,9 +1,12 @@
 package dev.gregross.gergstoolsonline.system;
 
+import dev.gregross.gergstoolsonline.appuser.AppUserService;
 import dev.gregross.gergstoolsonline.technician.Technician;
 import dev.gregross.gergstoolsonline.technician.TechnicianRepository;
 import dev.gregross.gergstoolsonline.tool.Tool;
 import dev.gregross.gergstoolsonline.tool.ToolRepository;
+import dev.gregross.gergstoolsonline.appuser.AppUser;
+import dev.gregross.gergstoolsonline.appuser.AppUserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +17,12 @@ public class DBDataInitializer implements CommandLineRunner {
 
 	private final TechnicianRepository technicianRepository;
 
+	private final AppUserService appUserService;
 
-	public DBDataInitializer(ToolRepository toolRepository, TechnicianRepository technicianRepository) {
+	public DBDataInitializer(ToolRepository toolRepository, TechnicianRepository technicianRepository, AppUserService appUserService) {
 		this.toolRepository = toolRepository;
 		this.technicianRepository = technicianRepository;
+		this.appUserService = appUserService;
 	}
 
 	@Override
@@ -80,6 +85,32 @@ public class DBDataInitializer implements CommandLineRunner {
 		technicianRepository.save(w3);
 
 		toolRepository.save(a6);
+
+		// Create some users.
+		AppUser u1 = new AppUser();
+		u1.setId(1);
+		u1.setUsername("john");
+		u1.setPassword("123456");
+		u1.setEnabled(true);
+		u1.setRoles("admin user");
+
+		AppUser u2 = new AppUser();
+		u2.setId(2);
+		u2.setUsername("eric");
+		u2.setPassword("654321");
+		u2.setEnabled(true);
+		u2.setRoles("user");
+
+		AppUser u3 = new AppUser();
+		u3.setId(3);
+		u3.setUsername("tom");
+		u3.setPassword("qwerty");
+		u3.setEnabled(false);
+		u3.setRoles("user");
+
+		appUserService.save(u1);
+		appUserService.save(u2);
+		appUserService.save(u3);
 	}
 
 }

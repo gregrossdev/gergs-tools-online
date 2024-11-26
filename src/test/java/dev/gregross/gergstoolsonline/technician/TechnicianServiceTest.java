@@ -1,6 +1,6 @@
 package dev.gregross.gergstoolsonline.technician;
 
-import dev.gregross.gergstoolsonline.system.exception.ObjectNotFoundException;
+import dev.gregross.gergstoolsonline.system.http.exception.ObjectNotFoundException;
 import dev.gregross.gergstoolsonline.tool.Tool;
 import dev.gregross.gergstoolsonline.tool.ToolRepository;
 import org.junit.jupiter.api.AfterEach;

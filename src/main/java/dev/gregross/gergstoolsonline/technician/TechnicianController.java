@@ -1,14 +1,13 @@
 package dev.gregross.gergstoolsonline.technician;
 
-import dev.gregross.gergstoolsonline.system.Result;
-import dev.gregross.gergstoolsonline.system.StatusCode;
+import dev.gregross.gergstoolsonline.system.http.Result;
+import dev.gregross.gergstoolsonline.system.http.StatusCode;
 import dev.gregross.gergstoolsonline.technician.converter.TechnicianDtoToTechnicianConverter;
 import dev.gregross.gergstoolsonline.technician.converter.TechnicianToTechnicianDtoConverter;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/technicians")

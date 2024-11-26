@@ -1,4 +1,4 @@
-package dev.gregross.gergstoolsonline.system;
+package dev.gregross.gergstoolsonline.system.http;
 
 public class Result {
 

@@ -3,11 +3,10 @@ package dev.gregross.gergstoolsonline.technician;
 import dev.gregross.gergstoolsonline.tool.Tool;
 import dev.gregross.gergstoolsonline.tool.ToolRepository;
 import jakarta.transaction.Transactional;
-import dev.gregross.gergstoolsonline.system.exception.ObjectNotFoundException;
+import dev.gregross.gergstoolsonline.system.http.exception.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional

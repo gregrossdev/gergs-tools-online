@@ -1,4 +1,4 @@
-package dev.gregross.gergstoolsonline.user;
+package dev.gregross.gergstoolsonline.appuser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.gregross.gergstoolsonline.system.http.StatusCode;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-class UserControllerTest {
+class AppAppUserControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
@@ -36,9 +36,9 @@ class UserControllerTest {
 	ObjectMapper objectMapper;
 
 	@MockBean
-	UserService userService;
+	AppUserService appUserService;
 
-	List<User> users = new ArrayList<>();
+	List<AppUser> appUsers = new ArrayList<>();
 
 	@Value("${api.endpoint.base-url}")
 	String baseUrl;
@@ -46,42 +46,42 @@ class UserControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		User u1 = new User();
+		AppUser u1 = new AppUser();
 		u1.setId(1);
 		u1.setUsername("john");
 		u1.setPassword("123456");
 		u1.setEnabled(true);
 		u1.setRoles("admin user");
-		users.add(u1);
+		appUsers.add(u1);
 
-		User u2 = new User();
+		AppUser u2 = new AppUser();
 		u2.setId(2);
 		u2.setUsername("eric");
 		u2.setPassword("654321");
 		u2.setEnabled(true);
 		u2.setRoles("user");
-		users.add(u2);
+		appUsers.add(u2);
 
-		User u3 = new User();
+		AppUser u3 = new AppUser();
 		u3.setId(3);
 		u3.setUsername("tom");
 		u3.setPassword("qwerty");
 		u3.setEnabled(false);
 		u3.setRoles("user");
-		users.add(u3);
+		appUsers.add(u3);
 	}
 
 	@Test
 	void testFindAllUsersSuccess() throws Exception {
 		// Given. Arrange inputs and targets. Define the behavior of Mock object userService.
-		given(userService.findAll()).willReturn(users);
+		given(appUserService.findAll()).willReturn(appUsers);
 
 		// When and then
 		mockMvc.perform(get(this.baseUrl + "/users").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
 			.andExpect(jsonPath("$.message").value("Find All Success"))
-			.andExpect(jsonPath("$.data", Matchers.hasSize(users.size())))
+			.andExpect(jsonPath("$.data", Matchers.hasSize(appUsers.size())))
 			.andExpect(jsonPath("$.data[0].id").value(1))
 			.andExpect(jsonPath("$.data[0].username").value("john"))
 			.andExpect(jsonPath("$.data[1].id").value(2))
@@ -91,7 +91,7 @@ class UserControllerTest {
 	@Test
 	void testFindUserByIdSuccess() throws Exception {
 		// Given. Arrange inputs and targets. Define the behavior of Mock object userService.
-		given(userService.findById(2)).willReturn(users.get(1));
+		given(appUserService.findById(2)).willReturn(appUsers.get(1));
 
 		// When and then
 		mockMvc.perform(get(this.baseUrl + "/users/2").accept(MediaType.APPLICATION_JSON))
@@ -105,7 +105,7 @@ class UserControllerTest {
 	@Test
 	void testFindUserByIdNotFound() throws Exception {
 		// Given. Arrange inputs and targets. Define the behavior of Mock object userService.
-		given(userService.findById(5)).willThrow(new ObjectNotFoundException("user", 5));
+		given(appUserService.findById(5)).willThrow(new ObjectNotFoundException("user", 5));
 
 		// When and then
 		mockMvc.perform(get(this.baseUrl + "/users/5").accept(MediaType.APPLICATION_JSON))
@@ -117,19 +117,19 @@ class UserControllerTest {
 
 	@Test
 	void testAddUserSuccess() throws Exception {
-		User user = new User();
-		user.setId(4);
-		user.setUsername("lily");
-		user.setPassword("123456");
-		user.setEnabled(true);
-		user.setRoles("admin user"); // The delimiter is space.
+		AppUser appUser = new AppUser();
+		appUser.setId(4);
+		appUser.setUsername("lily");
+		appUser.setPassword("123456");
+		appUser.setEnabled(true);
+		appUser.setRoles("admin user"); // The delimiter is space.
 
-		String json = this.objectMapper.writeValueAsString(user);
+		String json = this.objectMapper.writeValueAsString(appUser);
 
-		user.setId(4);
+		appUser.setId(4);
 
 		// Given. Arrange inputs and targets. Define the behavior of Mock object userService.
-		given(userService.save(Mockito.any(User.class))).willReturn(user);
+		given(appUserService.save(Mockito.any(AppUser.class))).willReturn(appUser);
 
 		// When and then
 		mockMvc.perform(post(this.baseUrl + "/users").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
@@ -144,18 +144,18 @@ class UserControllerTest {
 
 	@Test
 	void testUpdateUserSuccess() throws Exception {
-		UserDto userDto = new UserDto(3, "tom123", false, "user");
+		AppUserDto appUserDto = new AppUserDto(3, "tom123", false, "user");
 
-		User updatedUser = new User();
-		updatedUser.setId(3);
-		updatedUser.setUsername("tom123"); // Username is changed. It was tom.
-		updatedUser.setEnabled(false);
-		updatedUser.setRoles("user");
+		AppUser updatedAppUser = new AppUser();
+		updatedAppUser.setId(3);
+		updatedAppUser.setUsername("tom123"); // Username is changed. It was tom.
+		updatedAppUser.setEnabled(false);
+		updatedAppUser.setRoles("user");
 
-		String json = this.objectMapper.writeValueAsString(userDto);
+		String json = this.objectMapper.writeValueAsString(appUserDto);
 
 		// Given. Arrange inputs and targets. Define the behavior of Mock object userService.
-		given(userService.update(eq(3), Mockito.any(User.class))).willReturn(updatedUser);
+		given(appUserService.update(eq(3), Mockito.any(AppUser.class))).willReturn(updatedAppUser);
 
 		// When and then
 		mockMvc.perform(put(this.baseUrl + "/users/3").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
@@ -171,11 +171,11 @@ class UserControllerTest {
 	@Test
 	void testUpdateUserErrorWithNonExistentId() throws Exception {
 		// Given. Arrange inputs and targets. Define the behavior of Mock object userService.
-		given(userService.update(eq(5), Mockito.any(User.class))).willThrow(new ObjectNotFoundException("user", 5));
+		given(appUserService.update(eq(5), Mockito.any(AppUser.class))).willThrow(new ObjectNotFoundException("user", 5));
 
-		UserDto userDto = new UserDto(5, "tom123", false, "user");
+		AppUserDto appUserDto = new AppUserDto(5, "tom123", false, "user");
 
-		String json = this.objectMapper.writeValueAsString(userDto);
+		String json = this.objectMapper.writeValueAsString(appUserDto);
 
 		// When and then
 		mockMvc.perform(put(this.baseUrl + "/users/5").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
@@ -188,7 +188,7 @@ class UserControllerTest {
 	@Test
 	void testDeleteUserSuccess() throws Exception {
 		// Given. Arrange inputs and targets. Define the behavior of Mock object userService.
-		doNothing().when(userService).delete(2);
+		doNothing().when(appUserService).delete(2);
 
 		// When and then
 		mockMvc.perform(delete(this.baseUrl + "/users/2").accept(MediaType.APPLICATION_JSON))
@@ -200,7 +200,7 @@ class UserControllerTest {
 	@Test
 	void testDeleteUserErrorWithNonExistentId() throws Exception {
 		// Given. Arrange inputs and targets. Define the behavior of Mock object userService.
-		doThrow(new ObjectNotFoundException("user", 5)).when(userService).delete(5);
+		doThrow(new ObjectNotFoundException("user", 5)).when(appUserService).delete(5);
 
 		// When and then
 		mockMvc.perform(delete(this.baseUrl + "/users/5").accept(MediaType.APPLICATION_JSON))
