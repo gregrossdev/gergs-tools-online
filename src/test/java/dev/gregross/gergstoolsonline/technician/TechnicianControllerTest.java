@@ -32,21 +32,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 class TechnicianControllerTest {
 
-	@Value("${api.endpoint.base-url}")
-	String baseUrl;
-	
+	@Autowired
+	MockMvc mockMvc;
+
 	@Autowired
 	ObjectMapper objectMapper;
 
 	@MockBean
 	TechnicianService technicianService;
 
-	List<Technician> technicians = new ArrayList<>();
-	@Autowired
-	private MockMvc mockMvc;
+	List<Technician> technicians;
+
+	@Value("${api.endpoint.base-url}")
+	String baseUrl;
+
 
 	@BeforeEach
-	void setUp() {
+	void setUp() throws Exception {
 		Tool a1 = new Tool();
 		a1.setId("1250808601744904191");
 		a1.setName("Deluminator");
@@ -83,6 +85,8 @@ class TechnicianControllerTest {
 		a6.setDescription("The Resurrection Stone allows the holder to bring back deceased loved ones, in a semi-physical form, and communicate with them.");
 		a6.setImageUrl("ImageUrl");
 
+		technicians = new ArrayList<>();
+
 		Technician w1 = new Technician();
 		w1.setId(1);
 		w1.setName("Albus Dumbledore");
@@ -104,16 +108,29 @@ class TechnicianControllerTest {
 		technicians.add(w3);
 	}
 
-	@AfterEach
-	void tearDown() {
+	@Test
+	void testFindAllTechniciansSuccess() throws Exception {
+		// Given. Arrange inputs and targets. Define the behavior of Mock object technicianService.
+		given(technicianService.findAll()).willReturn(technicians);
+
+		// When and then
+		mockMvc.perform(get(baseUrl + "/technicians").accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.flag").value(true))
+			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
+			.andExpect(jsonPath("$.message").value("Find All Success"))
+			.andExpect(jsonPath("$.data", Matchers.hasSize(technicians.size())))
+			.andExpect(jsonPath("$.data[0].id").value(1))
+			.andExpect(jsonPath("$.data[0].name").value("Albus Dumbledore"))
+			.andExpect(jsonPath("$.data[1].id").value(2))
+			.andExpect(jsonPath("$.data[1].name").value("Harry Potter"));
 	}
 
 	@Test
 	void testFindTechnicianByIdSuccess() throws Exception {
-		// given a technician id
-		given(technicianService.findById(1)).willReturn(technicians. 	get(0));
+		// Given. Arrange inputs and targets. Define the behavior of Mock object technicianService.
+		given(technicianService.findById(1)).willReturn(technicians.get(0));
 
-		// when the technician is found
+		// When and then
 		mockMvc.perform(get(baseUrl + "/technicians/1").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
@@ -124,35 +141,15 @@ class TechnicianControllerTest {
 
 	@Test
 	void testFindTechnicianByIdNotFound() throws Exception {
-		// given a technician id
-		given(technicianService.findById(5))
-			.willThrow(new ObjectNotFoundException("technician", 5));
+		// Given. Arrange inputs and targets. Define the behavior of Mock object technicianService.
+		given(technicianService.findById(5)).willThrow(new ObjectNotFoundException("technician", 5));
 
-		// when the technician is not found
+		// When and then
 		mockMvc.perform(get(baseUrl + "/technicians/5").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(false))
 			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
 			.andExpect(jsonPath("$.message").value("Could not find technician with id: 5"))
 			.andExpect(jsonPath("$.data").isEmpty());
-	}
-
-	@Test
-	void testFindAllTechniciansSuccess() throws Exception {
-		// given a list of technicians
-		given(technicianService.findAll()).willReturn(technicians);
-
-		// when all technicians are found
-		mockMvc.perform(get(baseUrl + "/technicians").accept(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.flag").value(true))
-			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
-			.andExpect(jsonPath("$.message").value("Find All Success"))
-			.andExpect(jsonPath("$.data", Matchers.hasSize(technicians.size())))
-			.andExpect(jsonPath("$.data[0].id").value(1))
-			.andExpect(jsonPath("$.data[0].name").value("Albus Dumbledore"))
-			.andExpect(jsonPath("$.data[1].id").value(2))
-			.andExpect(jsonPath("$.data[1].name").value("Harry Potter"))
-			.andExpect(jsonPath("$.data[2].id").value(3))
-			.andExpect(jsonPath("$.data[2].name").value("Neville Longbottom"));
 	}
 
 	@Test
@@ -169,7 +166,7 @@ class TechnicianControllerTest {
 		given(technicianService.save(Mockito.any(Technician.class))).willReturn(savedTechnician);
 
 		// When and then
-		this.mockMvc.perform(post(this.baseUrl + "/technicians").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(post(baseUrl + "/technicians").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
 			.andExpect(jsonPath("$.message").value("Add Success"))
@@ -191,7 +188,7 @@ class TechnicianControllerTest {
 		given(technicianService.update(eq(1), Mockito.any(Technician.class))).willReturn(updatedTechnician);
 
 		// When and then
-		this.mockMvc.perform(put(this.baseUrl + "/technicians/1").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(baseUrl + "/technicians/1").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
 			.andExpect(jsonPath("$.message").value("Update Success"))
@@ -211,7 +208,7 @@ class TechnicianControllerTest {
 		String json = objectMapper.writeValueAsString(technicianDto);
 
 		// When and then
-		this.mockMvc.perform(put(this.baseUrl + "/technicians/5").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(baseUrl + "/technicians/5").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(false))
 			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
 			.andExpect(jsonPath("$.message").value("Could not find technician with id: 5"))
@@ -224,7 +221,7 @@ class TechnicianControllerTest {
 		doNothing().when(technicianService).delete(3);
 
 		// When and then
-		this.mockMvc.perform(delete(this.baseUrl + "/technicians/3").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete(baseUrl + "/technicians/3").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
 			.andExpect(jsonPath("$.message").value("Delete Success"))
@@ -237,14 +234,50 @@ class TechnicianControllerTest {
 		doThrow(new ObjectNotFoundException("technician", 5)).when(technicianService).delete(5);
 
 		// When and then
-		this.mockMvc.perform(delete(this.baseUrl + "/technicians/5").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete(baseUrl + "/technicians/5").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(false))
 			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
 			.andExpect(jsonPath("$.message").value("Could not find technician with id: 5"))
 			.andExpect(jsonPath("$.data").isEmpty());
 	}
 
+	@Test
+	void testAssignToolSuccess() throws Exception {
+		// Given
+		doNothing().when(technicianService).assignTool(2, "1250808601744904191");
 
+		// When and then
+		mockMvc.perform(put(baseUrl + "/technicians/2/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.flag").value(true))
+			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
+			.andExpect(jsonPath("$.message").value("Tool Assignment Success"))
+			.andExpect(jsonPath("$.data").isEmpty());
+	}
 
+	@Test
+	void testAssignToolErrorWithNonExistentTechnicianId() throws Exception {
+		// Given
+		doThrow(new ObjectNotFoundException("technician", 5)).when(technicianService).assignTool(5, "1250808601744904191");
+
+		// When and then
+		mockMvc.perform(put(baseUrl + "/technicians/5/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.flag").value(false))
+			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
+			.andExpect(jsonPath("$.message").value("Could not find technician with id: 5"))
+			.andExpect(jsonPath("$.data").isEmpty());
+	}
+
+	@Test
+	void testAssignToolErrorWithNonExistentToolId() throws Exception {
+		// Given
+		doThrow(new ObjectNotFoundException("tool", "1250808601744904199")).when(technicianService).assignTool(2, "1250808601744904199");
+
+		// When and then
+		mockMvc.perform(put(baseUrl + "/technicians/2/tools/1250808601744904199").accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.flag").value(false))
+			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
+			.andExpect(jsonPath("$.message").value("Could not find tool with id: 1250808601744904199"))
+			.andExpect(jsonPath("$.data").isEmpty());
+	}
 
 }

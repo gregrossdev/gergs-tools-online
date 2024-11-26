@@ -3,6 +3,7 @@ package dev.gregross.gergstoolsonline.tool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.gregross.gergstoolsonline.system.http.StatusCode;
 import dev.gregross.gergstoolsonline.system.http.exception.ObjectNotFoundException;
+
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,19 +17,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false) // Turn off Spring Security
 class ToolControllerTest {
 
 	@Autowired
@@ -40,56 +40,57 @@ class ToolControllerTest {
 	@Autowired
 	ObjectMapper objectMapper;
 
-	@Value("${api.endpoint.base-url}") // Spring will go to application-dev.yml to find the value and inject into this field.
+	List<Tool> tools;
+
+	@Value("${api.endpoint.base-url}") // Spring will go to application.yml to find the value and inject into this field.
 	String baseUrl;
 
-	List<Tool> tools = new ArrayList<>();
 
 	@BeforeEach
 	void setUp() {
-		this.tools = new ArrayList<>();
+		tools = new ArrayList<>();
 
 		Tool a1 = new Tool();
 		a1.setId("1250808601744904191");
 		a1.setName("Deluminator");
 		a1.setDescription("A Deluminator is a device invented by Albus Dumbledore that resembles a cigarette lighter. It is used to remove or absorb (as well as return) the light from any light source to provide cover to the user.");
 		a1.setImageUrl("ImageUrl");
-		this.tools.add(a1);
+		tools.add(a1);
 
 		Tool a2 = new Tool();
 		a2.setId("1250808601744904192");
 		a2.setName("Invisibility Cloak");
 		a2.setDescription("An invisibility cloak is used to make the wearer invisible.");
 		a2.setImageUrl("ImageUrl");
-		this.tools.add(a2);
+		tools.add(a2);
 
 		Tool a3 = new Tool();
 		a3.setId("1250808601744904193");
 		a3.setName("Elder Wand");
 		a3.setDescription("The Elder Wand, known throughout history as the Deathstick or the Wand of Destiny, is an extremely powerful wand made of elder wood with a core of Thestral tail hair.");
 		a3.setImageUrl("ImageUrl");
-		this.tools.add(a3);
+		tools.add(a3);
 
 		Tool a4 = new Tool();
 		a4.setId("1250808601744904194");
 		a4.setName("The Marauder's Map");
 		a4.setDescription("A magical map of Hogwarts created by Remus Lupin, Peter Pettigrew, Sirius Black, and James Potter while they were students at Hogwarts.");
 		a4.setImageUrl("ImageUrl");
-		this.tools.add(a4);
+		tools.add(a4);
 
 		Tool a5 = new Tool();
 		a5.setId("1250808601744904195");
 		a5.setName("The Sword Of Gryffindor");
 		a5.setDescription("A goblin-made sword adorned with large rubies on the pommel. It was once owned by Godric Gryffindor, one of the medieval founders of Hogwarts.");
 		a5.setImageUrl("ImageUrl");
-		this.tools.add(a5);
+		tools.add(a5);
 
 		Tool a6 = new Tool();
 		a6.setId("1250808601744904196");
 		a6.setName("Resurrection Stone");
 		a6.setDescription("The Resurrection Stone allows the holder to bring back deceased loved ones, in a semi-physical form, and communicate with them.");
 		a6.setImageUrl("ImageUrl");
-		this.tools.add(a6);
+		tools.add(a6);
 	}
 
 	@AfterEach
@@ -99,10 +100,10 @@ class ToolControllerTest {
 	@Test
 	void testFindToolByIdSuccess() throws Exception {
 		// Given
-		given(toolService.findById("1250808601744904191")).willReturn(this.tools.get(0));
+		given(toolService.findById("1250808601744904191")).willReturn(tools.get(0));
 
 		// When and then
-		mockMvc.perform(get("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get(baseUrl + "/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
 			.andExpect(jsonPath("$.message").value("Find One Success"))
@@ -116,7 +117,7 @@ class ToolControllerTest {
 		given(toolService.findById("1250808601744904191")).willThrow(new ObjectNotFoundException("tool", "1250808601744904191"));
 
 		// When and then
-		mockMvc.perform(get("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get(baseUrl + "/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(false))
 			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
 			.andExpect(jsonPath("$.message").value("Could not find tool with id: 1250808601744904191"))
@@ -125,13 +126,15 @@ class ToolControllerTest {
 
 	@Test
 	void testFindAllToolsSuccess() throws Exception {
+		// Given
 		given(toolService.findAll()).willReturn(tools);
 
-		mockMvc.perform(get("/api/v1/tools").accept(MediaType.APPLICATION_JSON))
+		// When and then
+		mockMvc.perform(get(baseUrl + "/tools").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
 			.andExpect(jsonPath("$.message").value("Find All Success"))
-			.andExpect(jsonPath("$.data", Matchers.hasSize(this.tools.size())))
+			.andExpect(jsonPath("$.data", Matchers.hasSize(tools.size())))
 			.andExpect(jsonPath("$.data[0].id").value("1250808601744904191"))
 			.andExpect(jsonPath("$.data[0].name").value("Deluminator"))
 			.andExpect(jsonPath("$.data[1].id").value("1250808601744904192"))
@@ -156,9 +159,8 @@ class ToolControllerTest {
 
 		given(toolService.save(Mockito.any(Tool.class))).willReturn(savedTool);
 
-
 		// When and then
-		mockMvc.perform(post("/api/v1/tools").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(post(baseUrl + "/tools").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
 			.andExpect(jsonPath("$.message").value("Add Success"))
@@ -187,7 +189,7 @@ class ToolControllerTest {
 		given(toolService.update(eq("1250808601744904192"), Mockito.any(Tool.class))).willReturn(updatedTool);
 
 		// When and then
-		mockMvc.perform(put("/api/v1/tools/1250808601744904192").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(baseUrl + "/tools/1250808601744904192").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
 			.andExpect(jsonPath("$.message").value("Update Success"))
@@ -210,7 +212,7 @@ class ToolControllerTest {
 		given(toolService.update(eq("1250808601744904192"), Mockito.any(Tool.class))).willThrow(new ObjectNotFoundException("tool", "1250808601744904192"));
 
 		// When and then
-		mockMvc.perform(put("/api/v1/tools/1250808601744904192").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(baseUrl + "/tools/1250808601744904192").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(false))
 			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
 			.andExpect(jsonPath("$.message").value("Could not find tool with id: 1250808601744904192"))
@@ -223,7 +225,7 @@ class ToolControllerTest {
 		doNothing().when(toolService).delete("1250808601744904191");
 
 		// When and then
-		mockMvc.perform(delete("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete(baseUrl + "/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(true))
 			.andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
 			.andExpect(jsonPath("$.message").value("Delete Success"))
@@ -236,16 +238,11 @@ class ToolControllerTest {
 		doThrow(new ObjectNotFoundException("tool", "1250808601744904191")).when(toolService).delete("1250808601744904191");
 
 		// When and then
-		mockMvc.perform(delete("/api/v1/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete(baseUrl + "/tools/1250808601744904191").accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.flag").value(false))
 			.andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
 			.andExpect(jsonPath("$.message").value("Could not find tool with id: 1250808601744904191"))
 			.andExpect(jsonPath("$.data").isEmpty());
 	}
-
-
-
-
-
 
 }

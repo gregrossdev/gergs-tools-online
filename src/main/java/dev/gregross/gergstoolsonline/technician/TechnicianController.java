@@ -8,42 +8,48 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/technicians")
+@RequestMapping("${api.endpoint.base-url}/technicians")
 public class TechnicianController {
 
 	private final TechnicianService technicianService;
-	private final TechnicianToTechnicianDtoConverter technicianToTechnicianDtoConverter;
-	private final TechnicianDtoToTechnicianConverter technicianDtoToTechnicianConverter;
 
-	public TechnicianController(TechnicianService technicianService, TechnicianToTechnicianDtoConverter technicianToTechnicianDtoConverter, TechnicianDtoToTechnicianConverter technicianDtoToTechnicianConverter) {
+	private final TechnicianDtoToTechnicianConverter technicianDtoToTechnicianConverter; // Convert TechnicianDto to Technician.
+
+	private final TechnicianToTechnicianDtoConverter technicianToTechnicianDtoConverter; // Convert Technician to TechnicianDto.
+
+
+	public TechnicianController(TechnicianService technicianService, TechnicianDtoToTechnicianConverter technicianDtoToTechnicianConverter, TechnicianToTechnicianDtoConverter technicianToTechnicianDtoConverter) {
 		this.technicianService = technicianService;
-		this.technicianToTechnicianDtoConverter = technicianToTechnicianDtoConverter;
 		this.technicianDtoToTechnicianConverter = technicianDtoToTechnicianConverter;
-	}
-
-	@GetMapping("/{technicianId}")
-	public Result findTechnicianById(@PathVariable int technicianId) {
-		Technician foundTechnician = technicianService.findById(technicianId);
-		TechnicianDto technicianDto = technicianToTechnicianDtoConverter.convert(foundTechnician);
-		return new Result(true, StatusCode.SUCCESS, "Find One Success", technicianDto);
+		this.technicianToTechnicianDtoConverter = technicianToTechnicianDtoConverter;
 	}
 
 	@GetMapping
 	public Result findAllTechnicians() {
 		List<Technician> foundTechnicians = technicianService.findAll();
+
+		// Convert foundTechnicians to a list of TechnicianDtos.
 		List<TechnicianDto> technicianDtos = foundTechnicians.stream()
 			.map(technicianToTechnicianDtoConverter::convert)
-			.toList();
+			.collect(Collectors.toList());
 		return new Result(true, StatusCode.SUCCESS, "Find All Success", technicianDtos);
+	}
+
+	@GetMapping("/{technicianId}")
+	public Result findTechnicianById(@PathVariable Integer technicianId) {
+		Technician foundTechnician = technicianService.findById(technicianId);
+		TechnicianDto technicianDto = technicianToTechnicianDtoConverter.convert(foundTechnician);
+		return new Result(true, StatusCode.SUCCESS, "Find One Success", technicianDto);
 	}
 
 	@PostMapping
 	public Result addTechnician(@Valid @RequestBody TechnicianDto technicianDto) {
 		Technician newTechnician = technicianDtoToTechnicianConverter.convert(technicianDto);
 		Technician savedTechnician = technicianService.save(newTechnician);
-		TechnicianDto savedTechnicianDto = this.technicianToTechnicianDtoConverter.convert(savedTechnician);
+		TechnicianDto savedTechnicianDto = technicianToTechnicianDtoConverter.convert(savedTechnician);
 		return new Result(true, StatusCode.SUCCESS, "Add Success", savedTechnicianDto);
 	}
 
@@ -51,7 +57,7 @@ public class TechnicianController {
 	public Result updateTechnician(@PathVariable Integer technicianId, @Valid @RequestBody TechnicianDto technicianDto) {
 		Technician update = technicianDtoToTechnicianConverter.convert(technicianDto);
 		Technician updatedTechnician = technicianService.update(technicianId, update);
-		TechnicianDto updatedTechnicianDto = this.technicianToTechnicianDtoConverter.convert(updatedTechnician);
+		TechnicianDto updatedTechnicianDto = technicianToTechnicianDtoConverter.convert(updatedTechnician);
 		return new Result(true, StatusCode.SUCCESS, "Update Success", updatedTechnicianDto);
 	}
 
@@ -59,6 +65,12 @@ public class TechnicianController {
 	public Result deleteTechnician(@PathVariable Integer technicianId) {
 		technicianService.delete(technicianId);
 		return new Result(true, StatusCode.SUCCESS, "Delete Success");
+	}
+
+	@PutMapping("/{technicianId}/tools/{toolId}")
+	public Result assignTool(@PathVariable Integer technicianId, @PathVariable String toolId) {
+		technicianService.assignTool(technicianId, toolId);
+		return new Result(true, StatusCode.SUCCESS, "Tool Assignment Success");
 	}
 
 }
